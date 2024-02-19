@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <com.google.android.material.textfield.TextInputEditText
+
+        android:id="@+id/SMSText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:hint="sms 검색어를 입력해주세요"
+        android:layout_marginTop="300dp"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@id/SMSbutton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/SMSbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SMS Data Button"
+        app:layout_constraintBottom_toTopOf="@+id/MMSText"
+        app:layout_constraintEnd_toEndOf="parent"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/SMSText"
+        app:layout_constraintVertical_bias="0.363" />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/MMSText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:hint="mms 검색어를 입력해주세요"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@id/MMSbutton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/SMSbutton" />
+
+    <Button
+        android:id="@+id/MMSbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="MMS Data Button"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/MMSText" />
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
