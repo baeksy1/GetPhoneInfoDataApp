@@ -36,12 +36,15 @@ class MMSMessage {
     var seq:Int?=null
 
     /**TEXT 메시지 텍스트입니다.*/
-    var text : ArrayList<String>? = null
+    var text : String? = null
 
     /**_DATA 파트의 바이너리 데이터가 파일 시스템에 저장된 위치입니다.*/
     var _data:String?=null
 
     /** ADDRESS 보낸사람 번호*/
     var address:String ? =null
+
+    /** MMS_ID */
+    var id:String ? =null
 
 }

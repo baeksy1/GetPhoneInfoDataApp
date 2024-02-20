@@ -7,6 +7,8 @@ import android.net.Uri
 import android.provider.Telephony
 import android.util.Log
 import com.crepass.crepassmessage.listeners.BatchedQueryCallback
+import com.crepass.crepassmessage.listeners.MMSDATABatchQueried
+
 import com.crepass.crepassmessage.models.MMSMessage
 
 class MMSManager {
@@ -14,7 +16,7 @@ class MMSManager {
     private lateinit var preferences: SharedPreferences
 
     @SuppressLint("Range")
-    fun getMMSMessages(context: Context, batchedQueryCallback: BatchedQueryCallback) {
+    fun getMMSMessages(context: Context, batchedQueryCallback: MMSDATABatchQueried) {
 
 
         preferences = context.getSharedPreferences("keyword", Context.MODE_PRIVATE)
@@ -24,9 +26,10 @@ class MMSManager {
         val mmsInboxUri = Telephony.Mms.Inbox.CONTENT_URI
         val projection = arrayOf(Telephony.Mms._ID)  // MMS 메시지 ID를 가져옵니다.
         val mmsCursor = context.contentResolver.query(mmsInboxUri, projection, null, null, null)
-        var mmsgs = ArrayList<MMSMessage>()
 
         mmsCursor?.use { cursor ->
+            var batchCount = 0
+            var mmsgs = ArrayList<MMSMessage>()
             while (cursor.moveToNext()) {
 
 
@@ -40,6 +43,8 @@ class MMSManager {
                     arrayOf(messageId.toString()),
                     null
                 )?.use { addrCursor ->
+
+
                     while (addrCursor.moveToNext()) {
                         val address =
                             addrCursor.getString(addrCursor.getColumnIndex(Telephony.Mms.Addr.ADDRESS))
@@ -47,12 +52,24 @@ class MMSManager {
                         // 전화번호 형식을 정규화합니다(국가 코드 등을 고려해야 할 수 있음).
                         if (address.contains(phoneNumber.toString(), true)) {
 
+                            val colums = arrayListOf(
+                                "chset",
+                                "cd",
+                                "cid",
+                                "cl",
+                                "ct",
+                                "ctt_s",
+                                "ctt_t",
+                                "fn",
+                                "mid",
+                                "name",
+                                "seq",
+                                "_data",
+                                "Text",
+                                "id"
+                            )
 
-                            val mmsMsg = MMSMessage()
-                            Log.d("asdasdas", address)
 
-
-                            mmsMsg.address = address
                             context.contentResolver.query(
                                 Uri.parse("content://mms/part"),
                                 null,
@@ -60,169 +77,95 @@ class MMSManager {
                                 arrayOf(messageId.toString()),
                                 null
                             )?.use { cursor1 ->
-                                if (cursor1.moveToNext()) {
-                                    while (cursor1.moveToNext()) {
 
-                                        val colums = arrayListOf(
-                                            "chset",
-                                            "cd",
-                                            "cid",
-                                            "cl",
-                                            "ct",
-                                            "ctt_s",
-                                            "ctt_t",
-                                            "fn",
-                                            "mid",
-                                            "name",
-                                            "seq",
-                                            "_data"
+                                while (cursor1.moveToNext()) {
+                                    val mmsMsg = MMSMessage()
+//                            Log.d("asdasdas", address)
+
+
+                                    mmsMsg.address = address
+
+                                    mmsMsg.apply {
+                                        id = messageId.toString()
+                                        chset = cursor1.getString(
+                                            cursor1.getColumnIndex(colums[0])
                                         )
-                                        mmsMsg.apply {
-                                            chset = cursor1.getString(
-                                                cursor1.getColumnIndex(colums[0])
-                                            )
-                                            cd = cursor1.getString(
-                                                cursor1.getColumnIndex(colums[1])
-                                            )
-                                            cid =
-                                                cursor1.getInt(cursor1.getColumnIndex(colums[2]))
-                                            cl =
-                                                cursor1.getInt(cursor1.getColumnIndex(colums[3]))
-                                            ct = cursor1.getString(
-                                                cursor1.getColumnIndex(colums[4])
-                                            )
-                                            ctt_s =
-                                                cursor1.getInt(cursor1.getColumnIndex(colums[5]))
-                                            ctt_t = cursor1.getString(
-                                                cursor1.getColumnIndex(colums[6])
-                                            )
-                                            fn = cursor1.getString(
-                                                cursor1.getColumnIndex(colums[7])
-                                            )
-                                            mid =
-                                                cursor1.getInt(cursor1.getColumnIndex(colums[8]))
-                                            name = cursor1.getString(
-                                                cursor1.getColumnIndex(colums[9])
-                                            )
-                                            seq =
-                                                cursor1.getInt(cursor1.getColumnIndex(colums[10]))
-
-                                        }
-
-
-
-                                        if (!(cursor1.getString(
-                                                cursor1.getColumnIndexOrThrow(
-                                                    Telephony.Mms.Part._DATA
+                                        cd = cursor1.getString(
+                                            cursor1.getColumnIndex(colums[1])
+                                        )
+                                        cid =
+                                            cursor1.getInt(cursor1.getColumnIndex(colums[2]))
+                                        cl =
+                                            cursor1.getInt(cursor1.getColumnIndex(colums[3]))
+                                        ct = cursor1.getString(
+                                            cursor1.getColumnIndex(colums[4])
+                                        )
+                                        ctt_s =
+                                            cursor1.getInt(cursor1.getColumnIndex(colums[5]))
+                                        ctt_t = cursor1.getString(
+                                            cursor1.getColumnIndex(colums[6])
+                                        )
+                                        fn = cursor1.getString(
+                                            cursor1.getColumnIndex(colums[7])
+                                        )
+                                        mid =
+                                            cursor1.getInt(cursor1.getColumnIndex(colums[8]))
+                                        name = cursor1.getString(
+                                            cursor1.getColumnIndex(colums[9])
+                                        )
+                                        seq =
+                                            cursor1.getInt(cursor1.getColumnIndex(colums[10]))
+                                        _data =
+                                            cursor1.getString(
+                                                cursor1.getColumnIndex(
+                                                    colums[11]
                                                 )
-                                            )).isNullOrEmpty()
-                                        ) {
-                                            mmsMsg._data =
-                                                cursor1.getString(
-                                                    cursor1.getColumnIndex(
-                                                        colums[11]
-                                                    )
+                                            )
+                                        text =
+                                            cursor1.getString(
+                                                cursor1.getColumnIndex(
+                                                    colums[12]
                                                 )
-
-
-                                        }
-                                        if (!(cursor1.getString(
-                                                cursor1.getColumnIndexOrThrow(
-                                                    Telephony.Mms.Part.TEXT
-                                                )
-                                            )).isNullOrEmpty()
-                                        ) {
-
-
-                                        }
-                                        mmsgs.add(mmsMsg)
-                                        Log.d("smsData",mmsgs.toString())
+                                            )
                                     }
+
+
+
+
+                                    mmsgs.add(mmsMsg)
+                                    batchCount++
+
+
                                 }
+
+
+                                cursor1.close()
+
                             }
 
+                            if (batchCount >= BATCH_SIZE) {
+                                batchedQueryCallback.onBatchQueried(mmsgs)
+                                mmsgs = ArrayList()
+                                batchCount = 0
+                            }
+
+
+
                         }
+
                     }
+
                 }
             }
-        }
-        mmsCursor?.close()
-//        var cursor= context.contentResolver.query(
-//            Telephony.Mms.CONTENT_URI,null,null,null,null
-//        )
-//
-//
-//
-//        cursor.let {
-//            if (it != null) {
-//                while(it.moveToNext()){
-////                    println( cursor?.getInt(cursor.getColumnIndexOrThrow(Telephony.Mms._ID)))
-//                    if (cursor != null) {
-////                        getSender(context, cursor.getInt(cursor.getColumnIndexOrThrow(Telephony.Mms._ID)))
-//                        getBody(context, cursor.getInt(cursor.getColumnIndexOrThrow(Telephony.Mms._ID)))
-//                    }
-//                }
-//            }
-//        }
+            if (batchCount > 0) {
+                batchedQueryCallback.onBatchQueried(mmsgs)
 
-// Cursor 사용 후 닫기
-
-
-    }
-
-
-    private fun getSender(context: Context, id: Int) {
-        context.contentResolver.query(
-            Uri.parse("content://mms/$id/addr"),
-            null,
-            "${Telephony.Mms.Addr.MSG_ID}=?",
-            arrayOf(id.toString()),
-            null
-        )?.use { senderAddressCursor ->
-            if (senderAddressCursor.moveToNext()) {
-                do {
-                    val isSender = senderAddressCursor.getInt(
-                        senderAddressCursor.getColumnIndexOrThrow(Telephony.Mms.Addr.TYPE)
-                    ) == 137 // 151는 발신
-
-                    if (isSender) {
-                        println(
-                            senderAddressCursor.getString(
-                                senderAddressCursor.getColumnIndexOrThrow(
-                                    Telephony.Mms.Addr.ADDRESS
-                                )
-                            )
-                        )
-                    }
-
-                } while (senderAddressCursor.moveToNext())
             }
+            mmsCursor?.close()
+
         }
-    }
 
 
-    private fun getBody(context: Context, id: Int) {
-//        println("들어옴?")
-        context.contentResolver.query(
-            Uri.parse("content://mms/part"),
-            null,
-            "${Telephony.Mms.Part.MSG_ID}=?",
-            arrayOf(id.toString()),
-            null
-        )?.use { partsCursor ->
-            if (partsCursor.moveToNext()) {
-                do {
-                    val isSender = partsCursor.getString(
-                        partsCursor.getColumnIndexOrThrow(Telephony.Mms.Part.CONTENT_TYPE)
-                    ) // 151는 발신
-//                    println(isSender)
-                    if (isSender != "text/plain") {
-                        println(partsCursor.getString(partsCursor.getColumnIndexOrThrow(Telephony.Mms.Part.TEXT)))
-                    }
-
-                } while (partsCursor.moveToNext())
-            }
-        }
     }
 
 

@@ -20,6 +20,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <com.google.android.material.textfield.TextInputEditText
+
+        android:id="@+id/tokenText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:layout_marginBottom="10dp"
+        android:hint="token을 입력해주세요"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@id/SMSText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.482"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
     <Button
         android:id="@+id/SMSbutton"
         android:layout_width="wrap_content"
@@ -49,14 +65,13 @@
         android:id="@+id/MMSbutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="MMS Data Button"
+        android:layout_marginTop="96dp"
 
+        android:text="SD score 전송"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.506"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/MMSText" />
-
-
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
