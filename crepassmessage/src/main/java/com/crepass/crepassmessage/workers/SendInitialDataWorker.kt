@@ -12,11 +12,13 @@ class SendInitialDataWorker(context:Context,workerParams: WorkerParameters):
         val context=applicationContext
        return try {
 
-           if(inputData.getString("dataType")=="SMSData"){
+
                AndroidDataUtils().sendSMSMessages(context)
-           }else{
+
                AndroidDataUtils().sendMMSMessages(context)
-           }
+
+           AndroidDataUtils().sendSentinelMessage(context)
+
             Result.success()
         }catch (e:Exception){
             e.printStackTrace()

@@ -25,27 +25,25 @@ class MainActivity : AppCompatActivity() {
     private lateinit var preferences:SharedPreferences
     @SuppressLint("CommitPrefEdits")
     override fun onCreate(savedInstanceState: Bundle?) {
+        preferences=this.applicationContext.getSharedPreferences(
+            "keyword", Context.MODE_PRIVATE
+        )
+        val editor:SharedPreferences.Editor=preferences.edit()
+
         binding=ActivityMainBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
         binding.SMSbutton.setOnClickListener{
             val keyword=binding.SMSText.text.toString()
-            Log.d("키워드 키워드",keyword)
-            preferences=this.applicationContext.getSharedPreferences(
-                "keyword", Context.MODE_PRIVATE
-            )
-            val editor:SharedPreferences.Editor=preferences.edit()
             editor.putString("SMSKeyword",keyword)
             editor.commit()
             checkSmsData(this@MainActivity,"SMSData")
         }
         binding.MMSbutton.setOnClickListener{
             val keyword=binding.MMSText.text.toString()
-            Log.d("키워드 키워드",keyword)
-            preferences=this.applicationContext.getSharedPreferences(
-                "keyword", Context.MODE_PRIVATE
-            )
-            val editor:SharedPreferences.Editor=preferences.edit()
+            val token=binding.tokenText.text.toString()
+            editor.putString("token",token)
             editor.putString("MMSKeyword",keyword)
             editor.commit()
             checkSmsData(this@MainActivity,"MMSData")

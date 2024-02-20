@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import android.provider.Telephony
+import android.util.Log
 import com.crepass.crepassmessage.listeners.BatchedQueryCallback
 import com.crepass.crepassmessage.models.SMSMessage
 
@@ -82,6 +83,7 @@ class SMSManager {
                         msgs.add(smsMsg)
 
                         batchCount++
+
                         if (batchCount >= BATCH_SIZE) {
                             batchedQueryCallback.onBatchQueried(msgs)
                             msgs = ArrayList()
